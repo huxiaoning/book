@@ -74,6 +74,12 @@ public class MultiplexerTimeServer implements Runnable {
         }
     }
 
+    /**
+     * 注意各个if语句的嵌套关系
+     *
+     * @param key
+     * @throws IOException
+     */
     private void handleInput(SelectionKey key) throws IOException {
         if (key.isValid()) {
             if (key.isAcceptable()) {
