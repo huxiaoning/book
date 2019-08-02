@@ -50,11 +50,23 @@ public class TimeClient {
             this.firstMessage.writeBytes(req);
         }
 
+        /**
+         * TCP链路建立成功后，Netty的NIO线程会调用此方法
+         * <p>
+         * 即上来就发送查询时间的指令给服务端
+         */
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
             ctx.writeAndFlush(firstMessage);
         }
 
+        /**
+         * 收到服务器消息时触发
+         *
+         * @param ctx
+         * @param msg
+         * @throws Exception
+         */
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
             ByteBuf buf = (ByteBuf) msg;
@@ -65,6 +77,13 @@ public class TimeClient {
             System.out.println("Now is : " + body);
         }
 
+        /**
+         * 发生异常时触发，释放资源
+         *
+         * @param ctx
+         * @param cause
+         * @throws Exception
+         */
         @Override
         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
             // 释放资源
