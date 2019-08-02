@@ -11,17 +11,22 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 public class TimeClient {
 
     public void connect(String host, int port) throws Exception {
-        // 配置客户NIO线程组
+        // 配置客户端NIO线程组
         EventLoopGroup group = new NioEventLoopGroup();
         try {
+            // 创建客户端辅助启动类实例
             Bootstrap b = new Bootstrap();
+            // 配置客户端NIO线程组
             b.group(group)
+                    // 配置创建的 channel 为 NioSocketChannel 类的实例
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.TCP_NODELAY, true)
+                    // 配置用于处理网络事件的Handler
                     .handler(new ChannelInitializer<SocketChannel>() {
 
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
+                            // 处理网络 I/O 事件。如：记录日志、消息编解码
                             socketChannel.pipeline().addLast(new TimeCliendHandler());
                         }
                     });
@@ -30,6 +35,7 @@ public class TimeClient {
             // 等待服务端监听端口关闭
             f.channel().closeFuture().sync();
         } finally {
+            // 优雅退出，释放线程池资源
             group.shutdownGracefully();
         }
     }
@@ -57,6 +63,12 @@ public class TimeClient {
             buf.readBytes(req);
             String body = new String(req, "UTF-8");
             System.out.println("Now is : " + body);
+        }
+
+        @Override
+        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+            // 释放资源
+            ctx.close();
         }
     }
 
