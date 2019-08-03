@@ -57,6 +57,9 @@ public class TimeServer {
         }
     }
 
+    /**
+     * 用于对网络事件进行读写操作
+     */
     private class TimeServerHandler extends ChannelHandlerAdapter {
 
         @Override
@@ -69,11 +72,19 @@ public class TimeServer {
             System.out.println("The time server receive order:" + body);
             String currentTime = "query time order".equalsIgnoreCase(body) ? new Date().toString() : "bad order";
             ByteBuf resp = Unpooled.copiedBuffer(currentTime.getBytes());
+
+            /**
+             * 从性能角度考虑，为了防止频繁地唤醒 Selector 进行消息发送
+             * Netty 的 write() 方法并不直接把消息写入 SocketChannel 中，write()方法只是把待发送的消息放到发送缓冲数组中
+             */
             ctx.write(resp);
         }
 
         @Override
         public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+            /**
+             * flush() 方法：将发送缓冲数组中的消息全部写到 SocketChannel 中。
+             */
             ctx.flush();
         }
 
