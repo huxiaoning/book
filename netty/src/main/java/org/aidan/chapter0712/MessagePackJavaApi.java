@@ -1,4 +1,4 @@
-package org.aidan.chapter0711;
+package org.aidan.chapter0712;
 
 import org.msgpack.MessagePack;
 import org.msgpack.template.Templates;
