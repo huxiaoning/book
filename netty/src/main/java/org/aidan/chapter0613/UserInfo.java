@@ -85,7 +85,7 @@ public class UserInfo implements Serializable {
             bos.close();
         }
         long endTime = System.currentTimeMillis();
-        // 1649
+        // 大约1649ms
         System.out.println("JDK序列化耗时：" + (endTime - startTime));
 
         System.out.println("--------------------------");
@@ -96,7 +96,7 @@ public class UserInfo implements Serializable {
             byte[] b = info.codeC(buffer);
         }
         endTime = System.currentTimeMillis();
-        // 121
+        // 大约121ms
         System.out.println("字节数组序列化耗时：" + (endTime - startTime));
     }
 }
