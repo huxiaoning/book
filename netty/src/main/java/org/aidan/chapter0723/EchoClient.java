@@ -21,9 +21,15 @@ public class EchoClient {
 
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
+                            // 用于处理半包消息,这样使用后面的 MsgpackDecoder 收到的永远都是整包消息。
+                            // 这里设置通过增加包头表示报文长度来避免粘包
                             socketChannel.pipeline().addLast("frameDecoder", new LengthFieldBasedFrameDecoder(65535, 0, 2, 0, 2));
+                            // MessagePack解码器
                             socketChannel.pipeline().addLast("msgpack decoder", new MsgpackDecoder());
+                            // 在ByteBuf之前增加2个字节的消息长度字段
+                            // 这里设置读取报文的包头长度来避免粘包
                             socketChannel.pipeline().addLast("frameEncoder", new LengthFieldPrepender(2));
+                            // MessagePack 编码器
                             socketChannel.pipeline().addLast("msgpack encoder", new MsgpackEncoder());
                             socketChannel.pipeline().addLast(new EchoClientHandler(sendNumber));
                         }
