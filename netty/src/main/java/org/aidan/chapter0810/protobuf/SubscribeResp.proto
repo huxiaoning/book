@@ -1,0 +1,10 @@
+syntax = "proto3";
+package netty;
+option java_package = "org.aidan.chapter0810.protobuf";
+option java_outer_classname = "SubscribeRespProto";
+
+message SubscribeResp{
+	int32 subReqId = 1;
+	int32 respCode = 2;
+	string desc = 3;
+}
