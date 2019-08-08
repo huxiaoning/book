@@ -26,9 +26,17 @@ public class HttpFileServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
+                            // HTTP请求消息解码器
                             ch.pipeline().addLast("http-decoder", new HttpRequestDecoder());
+                            // HttpObjectAggregator 解码器：将多个消息转换为单一的 FullHttpRequest 或 FullHttpResponse
+                            // 原因：HTTP解码器在每个HTTP消息中会生成多个消息对象
+                            // 1 HttpRequest/HttpResponse
+                            // 2 HttpContent
+                            // 3 LastHttpContent
                             ch.pipeline().addLast("http-aggregator", new HttpObjectAggregator(65536));
+                            // HTTP响应编码器
                             ch.pipeline().addLast("http-encoder", new HttpResponseEncoder());
+                            // Chunked Handler : 支持异步发送大的码流（如：大文件的传输），但不占用过多内存，防止Java内存溢出
                             ch.pipeline().addLast("http-chunked", new ChunkedWriteHandler());
                             ch.pipeline().addLast("fileServerHandler", new HttpFileServerHandler(url));
 
