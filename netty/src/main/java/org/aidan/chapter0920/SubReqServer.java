@@ -23,7 +23,9 @@ public class SubReqServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
+                            // 解码器 ，支持半包粘包处理
                             ch.pipeline().addLast(MarshallingCodeCFactory.buildMarshallingDecoder());
+                            // 编码器 , 支持半包粘包处理
                             ch.pipeline().addLast(MarshallingCodeCFactory.buildMarshallingEncoder());
                             ch.pipeline().addLast(new SubReqServerHandler());
                         }
